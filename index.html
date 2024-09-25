@@ -3,38 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datas Comemorativas Brasileiras</title>
+    <title>Jogo da Memória - Datas Comemorativas Brasileiras</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f0f0f0;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #db2727, #ffe600);
+            color: #ffffff;
         }
+
+        h1 {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 15px;
             max-width: 600px;
             margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
+
         .card {
-            width: 100px;
-            height: 100px;
-            background-color: #3498db;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            cursor: pointer;
+            width: 120px;
+            height: 120px;
             perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
             transition: transform 0.6s;
             transform-style: preserve-3d;
+            position: relative;
         }
-        .card.flipped {
+
+        .card.flipped .card-inner {
             transform: rotateY(180deg);
         }
+
         .card-front, .card-back {
             position: absolute;
             width: 100%;
@@ -44,22 +65,30 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .card-front {
-            background-color: #3498db;
-            color: white;
+            background: url('https://media.giphy.com/avatars/Colegioamericomelo/GDlklMziaXzJ.png') no-repeat center center;
+            background-size: cover;
         }
+
         .card-back {
-            background-color: green;
-            color: white;
             transform: rotateY(180deg);
+            padding: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .card-back.Natal {
-            background-color: red;
-        }
-
-
+        .card.natal .card-back { background-color: #c0392b; }
+        .card.ano-novo .card-back { background-color: #f1c40f; color: #333; }
+        .card.trabalho .card-back { background-color: #2c3e50; }
+        .card.independencia .card-back { background-color: #27ae60; }
+        .card.aparecida .card-back { background-color: #69bff8; }
+        .card.finados .card-back { background-color: #000000; }
+        .card.republica .card-back { background-color: #7f8c8d; }
+        .card.tiradentes .card-back { background-color: #eca130; }
     </style>
 </head>
 <body>
@@ -67,14 +96,14 @@
     <div class="game-board" id="gameBoard"></div>
     <script>
         const datas = [
-            { data: '01/01', evento: 'Ano Novo🎉' },
-            { data: '21/04', evento: 'Tiradentes🦷' },
-            { data: '01/05', evento: 'Dia do Trabalho💸' },
-            { data: '07/09', evento: 'Independência do Brasil🐎' },
-            { data: '12/10', evento: 'Nossa Senhora Aparecida🙏' },
-            { data: '02/11', evento: 'Finados☠️' },
-            { data: '15/11', evento: 'Proclamação da República⚔️' },
-            { data: '25/12', evento: 'Natal🎄' }
+            { data: '01/01', evento: '🎉Ano Novo', classe: 'ano-novo' },
+            { data: '21/04', evento: '🦷Tiradentes', classe: 'tiradentes' },
+            { data: '01/05', evento: '💪Dia do Trabalho', classe: 'trabalho' },
+            { data: '07/09', evento: '🐎Independência do Brasil', classe: 'independencia' },
+            { data: '12/10', evento: '🙏Nossa Senhora Aparecida', classe: 'aparecida' },
+            { data: '02/11', evento: '☠️Finados', classe: 'finados' },
+            { data: '15/11', evento: '⚔️Proclamação da República', classe: 'republica' },
+            { data: '25/12', evento: '🎄Natal', classe: 'natal' }
         ];
 
         let cards = [...datas, ...datas];
@@ -90,10 +119,12 @@
 
         function createCard(data, index) {
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className = `card ${data.classe}`;
             card.innerHTML = `
-                <div class="card-front">?</div>
-                <div class="card-back">${data.data}<br>${data.evento}</div>
+                <div class="card-inner">
+                    <div class="card-front"></div>
+                    <div class="card-back">${data.data}<br>${data.evento}</div>
+                </div>
             `;
             card.addEventListener('click', () => flipCard(card, index));
             return card;
@@ -118,11 +149,15 @@
             if (cards[index1].data === cards[index2].data) {
                 matchedPairs++;
                 if (matchedPairs === datas.length) {
-                    alert('Parabéns! Você completou o jogo!');
+                    setTimeout(() => {
+                        alert('Parabéns! Você completou o jogo!');
+                    }, 500);
                 }
             } else {
-                card1.classList.remove('flipped');
-                card2.classList.remove('flipped');
+                setTimeout(() => {
+                    card1.classList.remove('flipped');
+                    card2.classList.remove('flipped');
+                }, 500);
             }
 
             flippedCards = [];

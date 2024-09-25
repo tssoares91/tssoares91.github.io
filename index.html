@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datas Comemorativas Brasileiras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            perspective: 1000px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .card-front {
+            background-color: #3498db;
+            color: white;
+        }
+        .card-back {
+            background-color: green;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .card-back.Natal {
+            background-color: red;
+        }
+
+
+    </style>
+</head>
+<body>
+    <h1>Datas Comemorativas Brasileiras</h1>
+    <div class="game-board" id="gameBoard"></div>
+    <script>
+        const datas = [
+            { data: '01/01', evento: 'Ano Novo🎉' },
+            { data: '21/04', evento: 'Tiradentes🦷' },
+            { data: '01/05', evento: 'Dia do Trabalho💸' },
+            { data: '07/09', evento: 'Independência do Brasil🐎' },
+            { data: '12/10', evento: 'Nossa Senhora Aparecida🙏' },
+            { data: '02/11', evento: 'Finados☠️' },
+            { data: '15/11', evento: 'Proclamação da República⚔️' },
+            { data: '25/12', evento: 'Natal🎄' }
+        ];
+
+        let cards = [...datas, ...datas];
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function createCard(data, index) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-front">?</div>
+                <div class="card-back">${data.data}<br>${data.evento}</div>
+            `;
+            card.addEventListener('click', () => flipCard(card, index));
+            return card;
+        }
+
+        function flipCard(card, index) {
+            if (flippedCards.length < 2 && !flippedCards.includes(index) && !card.classList.contains('flipped')) {
+                card.classList.add('flipped');
+                flippedCards.push(index);
+
+                if (flippedCards.length === 2) {
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [index1, index2] = flippedCards;
+            const card1 = document.querySelectorAll('.card')[index1];
+            const card2 = document.querySelectorAll('.card')[index2];
+
+            if (cards[index1].data === cards[index2].data) {
+                matchedPairs++;
+                if (matchedPairs === datas.length) {
+                    alert('Parabéns! Você completou o jogo!');
+                }
+            } else {
+                card1.classList.remove('flipped');
+                card2.classList.remove('flipped');
+            }
+
+            flippedCards = [];
+        }
+
+        function initGame() {
+            shuffleArray(cards);
+            const gameBoard = document.getElementById('gameBoard');
+            cards.forEach((data, index) => {
+                gameBoard.appendChild(createCard(data, index));
+            });
+        }
+
+        initGame();
+    </script>
+</body>
+</html>

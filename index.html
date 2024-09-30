@@ -14,15 +14,30 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background: linear-gradient(135deg, #db2727, #ffe600);
+            background: linear-gradient(135deg, #ff0000, #fffb00);
             color: #ffffff;
         }
 
-        h1 {
+        h1, h2 {
             text-align: center;
-            margin: 30px 0;
-            font-size: 2.5rem;
+            margin: 30px 0 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        .game-info div {
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         .game-board {
@@ -89,11 +104,93 @@
         .card.finados .card-back { background-color: #000000; }
         .card.republica .card-back { background-color: #7f8c8d; }
         .card.tiradentes .card-back { background-color: #eca130; }
+
+        button, input[type="text"], input[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover, input[type="submit"]:hover {
+            background-color: #27ae60;
+        }
+
+        input[type="text"] {
+            background-color: white;
+            color: #333;
+        }
+
+        #playerForm, #gameContainer, #gameOverContainer {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #playerForm input {
+            margin: 10px 0;
+        }
+
+        #ranking {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        #ranking th, #ranking td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #ranking th {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body>
     <h1>Datas Comemorativas Brasileiras</h1>
-    <div class="game-board" id="gameBoard"></div>
+    
+    <form id="playerForm">
+        <input type="text" id="playerName" placeholder="Digite seu nome" required>
+        <input type="submit" value="Iniciar Jogo">
+    </form>
+
+    <div id="gameContainer">
+        <div class="game-info">
+            <div>Jogador: <span id="playerNameDisplay"></span></div>
+            <div>Tempo: <span id="timer">00:00</span></div>
+            <div>Tentativas: <span id="attempts">0</span></div>
+        </div>
+        <div class="game-board" id="gameBoard"></div>
+    </div>
+
+    <div id="gameOverContainer">
+        <h2>Jogo Finalizado!</h2>
+        <div id="gameOverInfo"></div>
+        <button id="newGameButton">Iniciar Novo Jogo</button>
+        <h2>Ranking</h2>
+        <table id="ranking">
+            <thead>
+                <tr>
+                    <th>Posição</th>
+                    <th>Nome</th>
+                    <th>Tempo</th>
+                    <th>Tentativas</th>
+                </tr>
+            </thead>
+            <tbody id="rankingBody"></tbody>
+        </table>
+    </div>
+
     <script>
         const datas = [
             { data: '01/01', evento: '🎉Ano Novo', classe: 'ano-novo' },
@@ -109,6 +206,11 @@
         let cards = [...datas, ...datas];
         let flippedCards = [];
         let matchedPairs = 0;
+        let attempts = 0;
+        let timer;
+        let seconds = 0;
+        let playerName = "";
+        let ranking = JSON.parse(localStorage.getItem('memoryGameRanking')) || [];
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -136,6 +238,8 @@
                 flippedCards.push(index);
 
                 if (flippedCards.length === 2) {
+                    attempts++;
+                    updateAttempts();
                     setTimeout(checkMatch, 1000);
                 }
             }
@@ -149,9 +253,7 @@
             if (cards[index1].data === cards[index2].data) {
                 matchedPairs++;
                 if (matchedPairs === datas.length) {
-                    setTimeout(() => {
-                        alert('Parabéns! Você completou o jogo!');
-                    }, 500);
+                    endGame();
                 }
             } else {
                 setTimeout(() => {
@@ -163,15 +265,86 @@
             flippedCards = [];
         }
 
+        function updateAttempts() {
+            document.getElementById('attempts').textContent = attempts;
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                seconds++;
+                document.getElementById('timer').textContent = formatTime(seconds);
+            }, 1000);
+        }
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
         function initGame() {
             shuffleArray(cards);
             const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
             cards.forEach((data, index) => {
                 gameBoard.appendChild(createCard(data, index));
             });
+            matchedPairs = 0;
+            attempts = 0;
+            updateAttempts();
+            seconds = 0;
+            document.getElementById('timer').textContent = '00:00';
+            clearInterval(timer);
+            startTimer();
+
+            document.getElementById('playerForm').style.display = 'none';
+            document.getElementById('gameOverContainer').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'flex';
         }
 
-        initGame();
+        function endGame() {
+            clearInterval(timer);
+            const score = { name: playerName, time: seconds, attempts: attempts };
+            ranking.push(score);
+            ranking.sort((a, b) => a.time - b.time);
+            ranking = ranking.slice(0, 10); // Manter apenas os 10 melhores
+            localStorage.setItem('memoryGameRanking', JSON.stringify(ranking));
+
+            document.getElementById('gameOverInfo').textContent = 
+                `Parabéns, ${playerName}! Você completou o jogo em ${formatTime(seconds)} com ${attempts} tentativas!`;
+            
+            updateRankingTable();
+
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('gameOverContainer').style.display = 'flex';
+        }
+
+        function updateRankingTable() {
+            const rankingBody = document.getElementById('rankingBody');
+            rankingBody.innerHTML = '';
+            ranking.forEach((score, index) => {
+                const row = rankingBody.insertRow();
+                row.insertCell(0).textContent = index + 1;
+                row.insertCell(1).textContent = score.name;
+                row.insertCell(2).textContent = formatTime(score.time);
+                row.insertCell(3).textContent = score.attempts;
+            });
+        }
+
+        document.getElementById('playerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            playerName = document.getElementById('playerName').value;
+            document.getElementById('playerNameDisplay').textContent = playerName;
+            initGame();
+        });
+
+        document.getElementById('newGameButton').addEventListener('click', function() {
+            document.getElementById('playerForm').style.display = 'flex';
+            document.getElementById('gameOverContainer').style.display = 'none';
+        });
+
+        // Inicializar o formulário do jogador
+        document.getElementById('playerForm').style.display = 'flex';
     </script>
 </body>
 </html>

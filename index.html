@@ -7,66 +7,54 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
             font-family: 'Poppins', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #ff0000, #ffee00);
+            margin: 0;
+            background: linear-gradient(135deg, #ff0000, #fbff00);
             color: #ffffff;
-            padding: 20px;
         }
 
         h1, h2 {
             text-align: center;
-            margin: 20px 0;
+            margin: 30px 0 15px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        h1 { font-size: 2rem; }
-        h2 { font-size: 1.5rem; }
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
 
         .game-info {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-around;
             width: 100%;
             max-width: 600px;
             margin-bottom: 20px;
         }
 
         .game-info div {
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: 600;
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 5px 10px;
-            border-radius: 5px;
         }
 
         .game-board {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 10px;
-            width: 100%;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
             max-width: 600px;
             margin: 20px auto;
-            padding: 10px;
+            padding: 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .card {
-            aspect-ratio: 1 / 1;
+            width: 120px;
+            height: 120px;
             perspective: 1000px;
             cursor: pointer;
         }
@@ -94,7 +82,6 @@
             text-align: center;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            font-size: 0.8rem;
         }
 
         .card-front {
@@ -104,7 +91,8 @@
 
         .card-back {
             transform: rotateY(180deg);
-            padding: 5px;
+            padding: 10px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
@@ -118,7 +106,7 @@
         .card.tiradentes .card-back { background-color: #eca130; }
 
         button, input[type="text"], input[type="submit"] {
-            margin-top: 10px;
+            margin-top: 20px;
             padding: 10px 20px;
             font-size: 1rem;
             font-weight: 600;
@@ -137,16 +125,17 @@
         input[type="text"] {
             background-color: white;
             color: #333;
-            width: 100%;
-            max-width: 300px;
         }
 
         #playerForm, #gameContainer, #gameOverContainer {
             display: none;
             flex-direction: column;
             align-items: center;
-            width: 100%;
-            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        #playerForm input {
+            margin: 10px 0;
         }
 
         #ranking {
@@ -157,21 +146,13 @@
         }
 
         #ranking th, #ranking td {
-            padding: 8px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         #ranking th {
             background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        @media (max-width: 480px) {
-            h1 { font-size: 1.5rem; }
-            h2 { font-size: 1.2rem; }
-            .game-info div { font-size: 0.9rem; }
-            .card-back { font-size: 0.7rem; }
-            #ranking th, #ranking td { padding: 5px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -211,7 +192,7 @@
     </div>
 
     <script>
-              const datas = [
+        const datas = [
             { data: '01/01', evento: '🎉Ano Novo', classe: 'ano-novo' },
             { data: '21/04', evento: '🦷Tiradentes', classe: 'tiradentes' },
             { data: '01/05', evento: '💪Dia do Trabalho', classe: 'trabalho' },

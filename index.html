@@ -12,49 +12,55 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
-            margin: 0;
             background: linear-gradient(135deg, #ff0000, #fffb00);
             color: #ffffff;
+            padding: 20px;
         }
 
         h1, h2 {
             text-align: center;
-            margin: 30px 0 15px;
+            margin: 20px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
-        h1 { font-size: 2.5rem; }
-        h2 { font-size: 2rem; }
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.5rem; }
 
         .game-info {
             display: flex;
-            justify-content: space-around;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
             width: 100%;
             max-width: 600px;
             margin-bottom: 20px;
         }
 
         .game-info div {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 600;
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
         .game-board {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            width: 100%;
             max-width: 600px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 10px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .card {
-            width: 120px;
-            height: 120px;
+            aspect-ratio: 1 / 1;
             perspective: 1000px;
             cursor: pointer;
         }
@@ -82,6 +88,7 @@
             text-align: center;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            font-size: 0.8rem;
         }
 
         .card-front {
@@ -92,7 +99,6 @@
         .card-back {
             transform: rotateY(180deg);
             padding: 10px;
-            font-size: 0.8rem;
             font-weight: 600;
         }
 
@@ -125,13 +131,16 @@
         input[type="text"] {
             background-color: white;
             color: #333;
+            width: 100%;
+            max-width: 300px;
         }
 
         #playerForm, #gameContainer, #gameOverContainer {
             display: none;
             flex-direction: column;
             align-items: center;
-            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
         }
 
         #playerForm input {
@@ -146,7 +155,7 @@
         }
 
         #ranking th, #ranking td {
-            padding: 10px;
+            padding: 8px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
